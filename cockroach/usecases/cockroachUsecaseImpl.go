@@ -4,6 +4,8 @@ import (
 	"Bangseungjae/cockroach/cockroach/entities"
 	"Bangseungjae/cockroach/cockroach/models"
 	"Bangseungjae/cockroach/cockroach/repositories"
+	"context"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -19,14 +21,20 @@ func NewCockroachUsecaseImpl(
 	return &cockroachUsecaseImpl{cockroachRepository: cockroachRepository, cockroachMessage: cockroachMessage}
 }
 
-func (u cockroachUsecaseImpl) CockroachDataProcessing(in *models.AddCockroachData) error {
+func (u cockroachUsecaseImpl) CockroachDataProcessing(ctx context.Context, in *models.AddCockroachData) error {
 	insertCockroachData := &entities.InsertCockroachDto{
 		Amount: in.Amount,
 	}
 
-	if err := u.cockroachRepository.InsertCockroachData(insertCockroachData); err != nil {
+	db := u.cockroachRepository.GetDB()
+	err := db.GetDb().Transaction(func(tx *gorm.DB) error {
+		return u.cockroachRepository.InsertCockroachData(ctx, tx, insertCockroachData)
+	})
+
+	if err != nil {
 		return err
 	}
+
 	pushCockroachData := &entities.CockroachPushNotificationDto{
 		Title:        "Cockroach Detected 🪳 !!!",
 		Amount:       in.Amount,
