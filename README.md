@@ -16,6 +16,8 @@ go get github.com/labstack/echo/v4/middleware
 go get github.com/spf13/viper
 go get -u gorm.io/gorm
 go get -u gorm.io/driver/postgres
+
+go get github.com/stretchr/testify 
 ```
 
 Then, drill into the container to create the database line by line.
