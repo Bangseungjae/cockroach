@@ -1,0 +1,8 @@
+@DNS_HOST = localhost:8080
+
+POST {{DNS_HOST}}/v1/cockroach
+Content-Type: application/json
+
+{
+  "amount": 3
+}
